@@ -1,0 +1,69 @@
+.justification-footer {
+    position: fixed;
+    font-size: 14px;
+    bottom: 0;
+    height: 150px;
+    width: 50%;
+    left: 25%;
+    background-color: #fafafa;
+    box-shadow: 0 -1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.footer-loader {
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+
+.typing-wrapper {
+    padding: 1rem;
+    white-space: pre-wrap;
+}
+
+.follow-up-line,
+.justification-line {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.agent-icon {
+    margin-right: 0.5rem;
+}
+
+.thinking-loader {
+    display: flex;
+    align-items: center;
+    font-family: 'Courier New', monospace;
+    font-size: 16px;
+    padding: 1rem;
+}
+
+.blinking-cursor {
+    display: inline-block;
+    width: 8px;
+    animation: blink 0.9s steps(1) infinite;
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}

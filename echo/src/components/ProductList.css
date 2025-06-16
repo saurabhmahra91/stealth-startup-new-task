@@ -1,0 +1,115 @@
+.product-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+    padding: 2rem;
+}
+
+.product-card {
+    position: relative;
+    width: 380px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', sans-serif;
+    transition: transform 0.2s ease-in-out;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+}
+
+.image-overlay {
+    background-image: url('../assets/beauty-products.jpg');
+    /* your default background image */
+    background-size: cover;
+    background-position: center;
+    height: 160px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-blend-mode: multiply;
+    background-color: rgba(231, 43, 175, 0.336);
+}
+
+.add-to-cart {
+    background: transparent;
+    border: 2px solid #fff;
+    color: white;
+    font-weight: bold;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.add-to-cart:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.card-details {
+    padding: 1rem;
+    text-align: left;
+}
+
+.product-name {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.product-category {
+    font-size: 0.9rem;
+    color: #888;
+    margin-bottom: 0.5rem;
+}
+
+.product-description {
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.product-ingredients {
+    font-size: 0.85rem;
+    color: #555;
+    margin-bottom: 0.5rem;
+}
+
+.product-tags {
+    font-size: 0.8rem;
+    color: #777;
+    margin-bottom: 0.5rem;
+}
+
+.price-margin {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.price {
+    color: #d81515;
+}
+
+.margin {
+    color: #388e3c;
+}
+
+
+.hello-user {
+    font-size: 2rem;
+    font-weight: 500;
+    color: #888;
+    /* Soft gray */
+    background: linear-gradient(to right, #888888, #bbbbbb);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    opacity: 0.8;
+    letter-spacing: 0.5px;
+}

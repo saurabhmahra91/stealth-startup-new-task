@@ -1,0 +1,7 @@
+.hone-page {
+    width: 1300px;
+    padding-bottom: 300px;
+    flex: 1;
+    overflow-y: auto;
+    /* Reserve space for footer */
+}
