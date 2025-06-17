@@ -4,8 +4,7 @@ from .utils import load_fashion_data
 explicit_fields = {"price", "category", "sizes"}
 
 
-def filter_explicit(search_space: Axes):
-    data = load_fashion_data()
+def filter_explicit(skus: list[dict], search_space: Axes):
     filtered = []
 
     min_price = search_space.price.min_usd
@@ -13,7 +12,7 @@ def filter_explicit(search_space: Axes):
     allowed_sizes = set(search_space.sizes.values)
     allowed_cats = set(search_space.category.values)
 
-    for row in data:
+    for row in skus:
         if not (min_price <= row["usd_price"] <= max_price):
             continue
 

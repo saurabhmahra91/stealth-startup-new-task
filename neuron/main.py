@@ -42,9 +42,7 @@ def handle_query(data: UserQuery):
     result = flow.kickoff(inputs={"conversation": conv})
     justification = result["justification"]
     followup = result["followup"]
-    axes = result["search_space"]
-
-    products = filter_explicit(axes)
+    products = result["skus"]
 
     store_user_message(
         user_id=data.user_id, role="assistant", content=f"<justification>{justification}</justification>{followup}"
