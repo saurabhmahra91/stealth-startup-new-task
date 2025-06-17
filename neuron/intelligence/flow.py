@@ -1,6 +1,6 @@
 from crewai.flow.flow import Flow, and_, listen, start
 from pydantic import BaseModel
-
+import os
 from neuron.intelligence.followup import _ask_followup
 from neuron.intelligence.justification import _justify
 from neuron.intelligence.refinement import _refine_axes
@@ -20,9 +20,8 @@ class SearchState(BaseModel):
 
 
 class SearchFlow(Flow[SearchState]):
-    # model = "gpt-4o-mini"
-    model = "ollama/gemma3:4b"
-
+    model = os.environ.get("MODEL", "ollama/gemma3:4b")
+    
     @start()
     def receive_user_query(self):
         print(self.state.conversation)
