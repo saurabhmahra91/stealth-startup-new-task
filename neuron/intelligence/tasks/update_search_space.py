@@ -16,8 +16,13 @@ refine_axis_task = Task(
 
         "You have to intelligently update this pydantic model *in-place*, preserving existing information from"
         "prior queries unless the new input clarifies or overrides it."
+        "This is the current search space for {axis_name} axis: {current_value}\n"
+        "In the beginning, it might be possible that the search space is "
+        "too broad or too narrow -- this is because it's set to default in the start. "
+
         "The history is for your reference, it could be possible that the user changed their mind and started "
         "searching something very different.\n"
+
         "Your job is to refine the `{axis_name}` in the structured product search space.\n"
         "- Focus *only* on updating `{axis_name}` based on the new query.\n"
         "- Preserve existing values unless there is a strong signal to change it.\n"

@@ -53,7 +53,7 @@ export default function HomePage() {
         };
 
         fetchConversation();
-    }, [userId, followUp, ]);
+    }, [followUp]);
 
     const [loading, setLoading] = useState(defaultLoading)
 

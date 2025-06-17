@@ -8,7 +8,7 @@ from .axes import Axes
 from .decision import route_query
 from .followup import _ask_followup
 from .justification import _justify
-from .refinement import _refine_axes
+from .refinement_v2 import _refine_axes
 
 
 def get_followup_axes():
@@ -48,13 +48,16 @@ class SearchFlow(Flow[SearchState]):
 
     @listen("SHOULD_REFINE_SEARCH")
     async def refine_axes(self, conv):
-        self.state.search_space = await _refine_axes(conv=conv)
+        self.state.search_space = await _refine_axes(self.model, search_space=self.state.search_space, conv=conv)
         print("Update search space ######################\n", self.state.search_space)
-        return conv
 
     @listen(refine_axes)
-    def justify(self, conv):
-        result = _justify(self.model, search_space=self.state.search_space, conv=conv)
+    def justify(self):
+        reasonings = {}
+        for field_name, value in self.state.search_space.model_dump().items():
+            reasonings[field_name] = value["reasoning"]
+
+        result = _justify(self.model, reasonings=reasonings)
         self.state.justification = result
         return self.state.justification
 
