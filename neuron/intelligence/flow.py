@@ -77,6 +77,10 @@ class SearchFlow(Flow[SearchState]):
     def end_sorting_and_filtering(self):
         return
 
+    @listen(or_(end_sorting_and_filtering, begin_preparing_empty_justification))
+    def create_final_skus(self):
+        return
+
     @listen(get_axes_preferences)
     def start_justification_reasoning(self):
         reasonings = {}
@@ -95,7 +99,7 @@ class SearchFlow(Flow[SearchState]):
     def prepare_response_and_justification(self):
         return
 
-    @listen(and_(prepare_response_and_justification, end_sorting_and_filtering))
+    @listen(and_(prepare_response_and_justification, create_final_skus))
     def send_response(self):
         return {
             "justification": self.state.justification,
