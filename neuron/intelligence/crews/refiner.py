@@ -1,7 +1,9 @@
 from crewai import LLM, Crew, Process
-
+import litellm
 from ..agents.search_space_updater import search_space_axis_agent
 from ..tasks.update_search_space import refine_axis_task
+
+litellm._turn_on_debug()
 
 ollama_llm = LLM(model="ollama/gemma3:4b", base_url="http://localhost:11434", api_key="")
 

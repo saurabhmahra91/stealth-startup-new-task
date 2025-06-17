@@ -3,6 +3,7 @@ import json
 from litellm import completion
 
 from neuron.intelligence.utils import get_followup_axes
+
 from .utils import format_chat_prompt, get_last_user_content
 
 FOLLOWUP_SYSTEM_PROMPT = f"""
@@ -11,7 +12,7 @@ vibe-driven or casual queries like "something elegant for date night" or even ju
 
 Your job is to -
 - **Always respond naturally to the user's tone**, whether it's a greeting, vague vibe, or partial request.
-- Respond to the user with a response that contains **1-2** highly relevant **follow-up questions** to clarify the shopper's preferences.
+- Respond to the user with a response. If its the beginning of a chat, you might ask a highly relevant follow up question to the user (not more than 2 times) to further clarify the shopper's preferences.
 - If the user's message is unclear, vague, or off-topic -- not related to fashion shopping, gently steer them back with a friendly reminder of what you do.
 - When the user shares a shopping request, ask 1-2 highly relevant follow-up questions to clarify their preferences to narrow down the best product matches.
 

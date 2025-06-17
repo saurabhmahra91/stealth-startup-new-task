@@ -1,6 +1,6 @@
 from litellm import completion
-from .utils import format_chat_prompt, get_last_user_content
 
+from .utils import format_chat_prompt, get_last_user_content
 
 JUSTIFICATION_SYSTEM_PROMPT = """
 You are a fashion assistant who helped a user discover clothing that fits their style and preferences.
