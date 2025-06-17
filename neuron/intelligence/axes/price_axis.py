@@ -12,5 +12,7 @@ class Price(BaseModel):
         default="",
     )
 
+
 import json
+
 print(json.dumps(Price.model_json_schema()))

@@ -1,6 +1,7 @@
-import re
 import json
-from axes import Axes
+import re
+
+from .axes import Axes
 
 
 def extract_json_from_response(text: str) -> dict:
@@ -38,11 +39,14 @@ def get_followup_axes():
     return Axes.model_json_schema()
 
 
-a = extract_json_from_response("""`
+def get_last_user_content(conv: list[dict]):
+    return next(msg["content"] for msg in reversed(conv) if msg["role"] == "user")
 
-{"name": "saurabh"}
 
-                           """)
-
-print(a)
-print(type(a))
+def format_chat_prompt(messages: list[dict]) -> str:
+    prompt = []
+    for msg in messages:
+        role = msg["role"].capitalize()
+        content = msg["content"].strip()
+        prompt.append(f"{role}: {content}")
+    return "\n".join(prompt)

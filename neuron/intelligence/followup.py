@@ -1,7 +1,9 @@
-from litellm import completion
 import json
-from neuron.intelligence.utils import get_followup_axes
 
+from litellm import completion
+
+from neuron.intelligence.utils import get_followup_axes
+from .utils import format_chat_prompt, get_last_user_content
 
 FOLLOWUP_SYSTEM_PROMPT = f"""
 You are a friendly and helpful **fashion shopping assistant** helping users find clothing based on
@@ -31,9 +33,12 @@ Your follow-up questions must be:
 """
 
 
-def FOLLOWUP_USER_PROMPT(user_query, preference_state):
+def FOLLOWUP_USER_PROMPT(conv, preference_state):
     return f"""
-User message: #####{user_query}#####
+The conversation so far:
+{format_chat_prompt(conv)}
+
+Last user message: #####{get_last_user_content(conv)}#####
 
 Currently known preferences (based on what they said or inferred):
 {preference_state}
@@ -43,7 +48,7 @@ Respond only with the the assistant response.
 """
 
 
-def _ask_followup(model, query, search_space):
+def _ask_followup(model, conv, search_space):
     response = completion(
         model=model,
         messages=[
@@ -53,7 +58,7 @@ def _ask_followup(model, query, search_space):
             },
             {
                 "role": "user",
-                "content": FOLLOWUP_USER_PROMPT(user_query=query, preference_state=search_space),
+                "content": FOLLOWUP_USER_PROMPT(conv=conv, preference_state=search_space),
             },
         ],
     )

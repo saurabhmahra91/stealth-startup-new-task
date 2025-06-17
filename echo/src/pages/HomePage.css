@@ -5,3 +5,34 @@
     overflow-y: auto;
     /* Reserve space for footer */
 }
+
+.conv {
+    width: 400px;
+}
+
+
+.justification {
+    font-weight: normal;
+    margin-bottom: 0.5rem;
+    /* color: #ccc; */
+    font-size: 0.95rem;
+}
+
+.reply.user strong {
+    color: black;
+    font-weight: bold;
+}
+
+.reply.assistant strong {
+    color: #4caf50;
+    /* Bold green */
+    font-weight: bold;
+}
+
+.chat-history {
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}

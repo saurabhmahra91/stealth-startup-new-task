@@ -12,28 +12,27 @@ export default function ProductList({ products }) {
         )
     }
 
-
     return (
         <div className="product-list">
             {products.map((p) => (
-                <div key={p.product_id} className="product-card">
+                <div key={p.id} className="product-card">
                     <div className="image-overlay">
                         <button className="add-to-cart">Add To Cart</button>
                     </div>
                     <div className="card-details">
                         <h3 className="product-name">{p.name}</h3>
                         <p className="product-category">{p.category}</p>
-                        <p className="product-description">{p.description}</p>
-                        <p className="product-ingredients"><strong>Top Ingredients:</strong> {p.top_ingredients}</p>
-                        <p className="product-tags"><strong>Tags:</strong> {p.tags.replace(/\|/g, ', ')}</p>
+                        <p className="product-sizes"><strong>Sizes:</strong> {p.available_sizes.join(', ')}</p>
+                        <p className="product-fabric"><strong>Fabric:</strong> {p.fabric}</p>
+                        <p className="product-fit"><strong>Fit:</strong> {p.fit}</p>
+                        <p className="product-sleeve"><strong>Sleeve:</strong> {p.sleeve_length}</p>
+                        <p className="product-color"><strong>Color/Print:</strong> {p.color_or_print}</p>
                         <div className="price-margin">
                             <span className="price">${p.usd_price}</span>
-                            <span className="margin">Margin: {Math.round(p.margin * 100)}%</span>
                         </div>
                     </div>
                 </div>
             ))}
         </div>
     )
-
 }

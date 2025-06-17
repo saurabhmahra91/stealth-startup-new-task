@@ -1,18 +1,10 @@
-from .enum_axes import (
-    Category,
-    Occasion,
-    Sizes,
-    Fabric,
-    Fit,
-    SleeveLength,
-    Neckline,
-    Length,
-    PantType,
-)
 from pydantic import BaseModel
+
+from .enum_axes import (Category, Fabric, Fit, Length, Neckline, Occasion,
+                        PantType, Sizes, SleeveLength)
 from .price_axis import Price
 
-AXIS_REGISTRY: tuple[tuple[str, BaseModel]] = (
+AXIS_REGISTRY = (
     ("category", Category),
     ("occasion", Occasion),
     ("sizes", Sizes),
@@ -37,3 +29,44 @@ class Axes(BaseModel):
     length: Length = Length()
     pant_type: PantType = PantType()
     price: Price = Price()
+
+
+example_axes = Axes(
+    category=Category(
+        values=["top", "dress"],
+        reasoning="User mentioned both 'blouses' and 'summer dresses', which map to 'top' and 'dress'.",
+    ),
+    occasion=Occasion(
+        values=["vacation", "party"],
+        reasoning="The query suggested beach vibes and a festive tone, implying vacation and party.",
+    ),
+    sizes=Sizes(
+        values=["s", "m", "l"], reasoning="Sizes 'S' to 'L' were inferred from average fit ranges for similar products."
+    ),
+    fabric=Fabric(
+        values=["cotton", "linen"],
+        reasoning="User emphasized breathable and natural fabrics, which matches cotton and linen.",
+    ),
+    fit=Fit(
+        values=["relaxed", "flowy"], reasoning="The words 'comfortable' and 'breezy' suggest relaxed and flowy fits."
+    ),
+    sleeve_length=SleeveLength(
+        values=["short sleeves", "sleeveless"],
+        reasoning="Summer clothing typically avoids full sleeves; user also said 'no sleeves please'.",
+    ),
+    neckline=Neckline(
+        values=["v neck", "halter"], reasoning="Mentions of casual and cool neckline styles suggest V-neck and halter."
+    ),
+    length=Length(
+        values=["midi", "mini"],
+        reasoning="The query indicated a preference for skirts above the ankle, hence midi and mini.",
+    ),
+    pant_type=PantType(
+        values=["mid-rise", "flared"], reasoning="The phrase 'retro jeans' hints at flared and mid-rise cuts."
+    ),
+    price=Price(
+        min_usd=0.0,
+        max_usd=60.0,
+        reasoning="User specified 'budget under $70' so we capped it at $60 to allow filtering margin.",
+    ),
+)

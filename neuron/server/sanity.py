@@ -1,8 +1,8 @@
 import logging
 import sqlite3
 
-from constants import products_sqlite
-from memory import valkey_client
+from .constants import products_sqlite
+from .memory import valkey_client
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -50,4 +50,3 @@ def test_valkey():
 
     except Exception as e:
         print(f"Error connecting or running commands: {e}")
-

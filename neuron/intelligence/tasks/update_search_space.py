@@ -1,15 +1,23 @@
 from crewai import Task
-from agents.search_space_updater import search_space_axis_agent
 
+from ..agents.search_space_updater import search_space_axis_agent
 
 refine_axis_task = Task(
     description=(
         "The user's current message is:\n"
         "#################\n"
         "{query}\n"
+        "#################\n\n"
+
+        "For context, this is the full conversation history:\n"
         "#################\n"
+        "{conv}\n"
+        "#################\n\n"
+
         "You have to intelligently update this pydantic model *in-place*, preserving existing information from"
         "prior queries unless the new input clarifies or overrides it."
+        "The history is for your reference, it could be possible that the user changed their mind and started "
+        "searching something very different.\n"
         "Your job is to refine the `{axis_name}` in the structured product search space.\n"
         "- Focus *only* on updating `{axis_name}` based on the new query.\n"
         "- Preserve existing values unless there is a strong signal to change it.\n"

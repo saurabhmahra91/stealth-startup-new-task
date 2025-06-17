@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import SearchBar from '../components/SearchBar'
 import ProductList from '../components/ProductList'
 import JustificationFooter from '../components/JustificationFooter'
@@ -28,6 +28,10 @@ export default function HomePage() {
     const [products, setProducts] = useState(defaultProducts)
     const [justification, setJustification] = useState(defaultJustification)
     const [followUp, setFollowUp] = useState(defaultFollowUp)
+    const [conversation, setConversation] = useState([]);
+
+
+
     const [userId] = useState(() => {
         const saved = localStorage.getItem('user_id')
         if (saved) return saved
@@ -35,6 +39,21 @@ export default function HomePage() {
         localStorage.setItem('user_id', newId)
         return newId
     })
+
+    useEffect(() => {
+        const fetchConversation = async () => {
+            try {
+                const res = await fetch(`${import.meta.env.VITE_APP_URL}/conversation/${userId}`);
+                if (!res.ok) throw new Error('Failed to fetch conversation');
+                const data = await res.json();
+                setConversation(data.conversation);
+            } catch (err) {
+                console.error("Error loading conversation:", err);
+            }
+        };
+
+        fetchConversation();
+    }, [userId]);
 
     const [loading, setLoading] = useState(defaultLoading)
 
@@ -69,17 +88,54 @@ export default function HomePage() {
         setFollowUp('')
     }
 
+    const chatEndRef = useRef(null);
+
+    useEffect(() => {
+        chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [conversation]);
+
     return (
         <div className="home-page">
-            <SearchBar onSearch={handleSearch} onFlush={handleFlush} />
-            <ProductList products={products} />
+            <div className="center">
+                <SearchBar onSearch={handleSearch} onFlush={handleFlush} />
+                <div>
+                    <div className="conv">
+                        <div className="chat-history">
+                            {conversation.map((msg, index) => {
+                                const raw = msg.content || "";
+                                const justificationMatch = raw.match(/<justification>(.*?)<\/justification>/s);
+                                const justification = justificationMatch?.[1]?.trim();
+                                const remainder = raw.replace(/<justification>.*?<\/justification>/s, "").trim();
 
-            <JustificationFooter
-                loading={loading}
-                justification={justification}
-                followUp={followUp}
-            />
+                                return (
+                                    <div key={index} className={`message ${msg.role}`}>
+                                        {justification && <div className="justification">{justification}</div>}
+                                        {remainder && (
+                                            <div
+                                                className={`reply ${msg.role}`}
+                                            >
+                                                <strong>{remainder}</strong>
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                            <div ref={chatEndRef} />
+                        </div>
 
+                    </div>
+                    <div className="product-list-view">
+                        <ProductList products={products} />
+                    </div>
+                </div>
+
+                <JustificationFooter
+                    loading={loading}
+                    justification={justification}
+                    followUp={followUp}
+                />
+
+            </div>
         </div>
     )
 }

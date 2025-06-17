@@ -1,4 +1,6 @@
 from litellm import completion
+from .utils import format_chat_prompt, get_last_user_content
+
 
 JUSTIFICATION_SYSTEM_PROMPT = """
 You are a fashion assistant who helped a user discover clothing that fits their style and preferences.
@@ -15,27 +17,29 @@ based on his query.
 """
 
 
-def JUSTIFICATION_USER_PROMPT(instance, query):
+def JUSTIFICATION_USER_PROMPT(instance, conv):
     return f"""
 Here is the current state of the axes for a fashion search session:
 {instance}
 
-This was the user's last query: {query}
+This was the user's last query: {get_last_user_content(conv)}
+
+This is the conversation history with the user: {format_chat_prompt(conv)}
 
 Please generate a positive natural-sounding explanation (2 lines) summarizing why did you chose these values of the
 current search space, using the reasoning fields to explain the logic. Ensure the response starts directly with the
-justification. No framing or commentary
+justification. No framing or commentary.
 """
 
 
-def _justify(model, search_space, query):
+def _justify(model, search_space, conv):
     response = completion(
         model=model,
         messages=[
             {"role": "system", "content": JUSTIFICATION_SYSTEM_PROMPT},
             {
                 "role": "user",
-                "content": JUSTIFICATION_USER_PROMPT(search_space, query),
+                "content": JUSTIFICATION_USER_PROMPT(search_space, conv),
             },
         ],
     )
