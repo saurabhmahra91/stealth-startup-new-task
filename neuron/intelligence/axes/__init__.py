@@ -1,7 +1,6 @@
 from pydantic import BaseModel
 
-from .enum_axes import (Category, Fabric, Fit, Length, Neckline, Occasion,
-                        PantType, Sizes, SleeveLength)
+from .enum_axes import Category, Fabric, Fit, Length, Neckline, Occasion, PantType, Sizes, SleeveLength
 from .price_axis import Price
 
 AXIS_REGISTRY = (

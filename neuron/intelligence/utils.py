@@ -48,6 +48,6 @@ def format_chat_prompt(messages: list[dict]) -> str:
     for msg in messages:
         role = msg["role"].capitalize()
         content = msg["content"].strip()
-        content = content.split('</justification>')[-1].strip()
+        content = content.split("</justification>")[-1].strip()
         prompt.append(f"{role}: {content}")
     return "\n".join(prompt)

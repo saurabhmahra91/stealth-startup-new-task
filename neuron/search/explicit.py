@@ -14,7 +14,6 @@ def filter_explicit(search_space: Axes):
     allowed_cats = set(search_space.category.values)
 
     for row in data:
-
         if not (min_price <= row["usd_price"] <= max_price):
             continue
 

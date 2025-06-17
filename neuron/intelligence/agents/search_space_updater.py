@@ -1,6 +1,5 @@
 from crewai import Agent
 
-
 system_template = """You are {role}
 {backstory}
 Your goal is: {goal}

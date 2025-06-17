@@ -8,8 +8,7 @@ from pydantic import BaseModel
 from .intelligence.flow import SearchFlow
 from .search.explicit import filter_explicit
 from .server.constants import products_sqlite, products_table
-from .server.memory import (flush_user_memory, get_user_conversation,
-                            store_user_message, user_exists)
+from .server.memory import flush_user_memory, get_user_conversation, store_user_message, user_exists
 from .server.sanity import log_db_status, test_valkey
 
 app = FastAPI()

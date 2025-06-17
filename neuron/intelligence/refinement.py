@@ -4,8 +4,7 @@ from collections.abc import Coroutine
 
 from .axes import AXIS_REGISTRY, Axes
 from .crews.refiner import search_axis_refiner
-from .utils import (extract_json_from_response, format_chat_prompt,
-                    get_last_user_content)
+from .utils import extract_json_from_response, format_chat_prompt, get_last_user_content
 
 
 async def _refined_axis(current_axis_value, conv, axis_name, axis_model):

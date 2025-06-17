@@ -1,14 +1,17 @@
-from litellm import completion
 import asyncio
 import json
-from collections.abc import Coroutine
+import logging
+
+from litellm import completion
 
 from .axes import AXIS_REGISTRY, Axes
-from .crews.refiner import search_axis_refiner
 from .utils import extract_json_from_response, format_chat_prompt, get_last_user_content
 
+logger = logging.getLogger(__file__)
 
-AXIS_SYSTEM_PROMPT = """
+
+def AXIS_SYSTEM_PROMPT(axis_name):
+    return f"""
 You are an expert fashion shopping assistant. You specialize in analyzing just one axis of a structured product search space at a time — in this case: `{axis_name}`.
 You use fashion expertise and logical reasoning to infer or update values for this axis only, without affecting the others.
 The input may be vibe-loaded or vague, but you're here to keep this fashion product search axis tight.
@@ -52,45 +55,50 @@ Only return the valid JSON for the updated axis.
 """
 
 
-async def _refined_axis(model, current_axis_value, conv, axis_name, axis_model):
-    response = completion(
-        model=model,
-        messages=[
-            {"role": "system", "content": AXIS_SYSTEM_PROMPT.format(axis_name=axis_name)},
-            {
-                "role": "user",
-                "content": AXIS_USER_PROMPT(
-                    query=get_last_user_content(conv),
-                    conv=format_chat_prompt(conv),
-                    axis_name=axis_name,
-                    current_value=json.dumps(current_axis_value, indent=2),
-                    axis_model_schema=json.dumps(axis_model.model_json_schema(), indent=2),
-                ),
-            },
-        ],
-    )
+def _build_axis_prompt(model, conv, axis_name, current_axis_value, axis_model):
+    system_prompt = {"role": "system", "content": AXIS_SYSTEM_PROMPT(axis_name=axis_name)}
+    user_prompt = {
+        "role": "user",
+        "content": AXIS_USER_PROMPT(
+            query=get_last_user_content(conv),
+            conv=format_chat_prompt(conv),
+            axis_name=axis_name,
+            current_value=json.dumps(current_axis_value, indent=2),
+            axis_model_schema=json.dumps(axis_model.model_json_schema(), indent=2),
+        ),
+    }
+    return [system_prompt, user_prompt]
 
+
+def _parse_axis_response(response, axis_name, axis_model):
     try:
-        model_instance = axis_model(**extract_json_from_response(response["choices"][0]["message"]["content"]))
-    except Exception:
-        print(f"Axis: {axis_name} | Raw LLM Output:\n{response['choices'][0]['message']['content']}")
-        raise
+        content = response["choices"][0]["message"]["content"]
+        data = extract_json_from_response(content)
+        return axis_model(**data)
+    except Exception as e:
+        logger.error(f"Error while refining the {axis_name} axis. LLM Output:\n{content}")
+        logger.error(f"Exception: {str(e)}")
+        return axis_model()
 
-    return model_instance
+
+async def _refine_single_axis(model, current_axis_value, conv, axis_name, axis_model):
+    messages = _build_axis_prompt(model, conv, axis_name, current_axis_value, axis_model)
+    response = completion(model=model, messages=messages)
+    return _parse_axis_response(response, axis_name, axis_model)
 
 
 async def _refine_axes(model, search_space: Axes, conv) -> Axes:
-    result_coroutines = []
+    async def refine_axis(axis_name, axis_model):
+        current_value = search_space.model_dump()[axis_name]
+        return axis_name, await _refine_single_axis(model, current_value, conv, axis_name, axis_model)
 
-    for axis_name, axis_model in AXIS_REGISTRY:
-        result_coro: Coroutine = _refined_axis(model, search_space.model_dump()[axis_name], conv, axis_name, axis_model)
-        result_coroutines.append(result_coro)
+    coroutines = [refine_axis(name, mdl) for name, mdl in AXIS_REGISTRY]
+    results = await asyncio.gather(*coroutines)
 
-    results = await asyncio.gather(*result_coroutines)
-    axis_instances = dict(
-        (axis_name, result) for (axis_name, axis_model), result in zip(AXIS_REGISTRY, results, strict=True)
-    )
-    print("axis instances ************************************************\n", axis_instances)
+    axis_instances = {name: result for name, result in results}
+    logger.debug("Axis instances:\n%s", axis_instances)
+
     updated_search_space = Axes(**axis_instances)
-    print("Update search space ######################\n", updated_search_space)
+    logger.debug("Updated search space:\n%s", updated_search_space)
+
     return updated_search_space

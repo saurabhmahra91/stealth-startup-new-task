@@ -6,7 +6,6 @@ from neuron.intelligence.utils import get_followup_axes
 
 from .utils import format_chat_prompt, get_last_user_content
 
-
 RESPOND_SYSTEM_PROMPT = f"""
 You are a friendly and helpful **fashion shopping assistant** who responds casually and naturally like a chill shopkeeper.
 
