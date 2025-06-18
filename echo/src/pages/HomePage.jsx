@@ -29,6 +29,7 @@ export default function HomePage() {
     const [justification, setJustification] = useState(defaultJustification)
     const [followUp, setFollowUp] = useState(defaultFollowUp)
     const [conversation, setConversation] = useState([]);
+    const [fetchConvTrigger, setFetchConvTrigger] = useState(true);
 
 
 
@@ -53,7 +54,7 @@ export default function HomePage() {
         };
 
         fetchConversation();
-    }, [followUp]);
+    }, [fetchConvTrigger]);
 
     const [loading, setLoading] = useState(defaultLoading)
 
@@ -77,6 +78,7 @@ export default function HomePage() {
             setJustification('')
             setFollowUp('Failed request. Can you please try with a fresh session.')
         } finally {
+            setFetchConvTrigger(!fetchConvTrigger)
             setLoading(false)
         }
     }
@@ -86,6 +88,7 @@ export default function HomePage() {
         setProducts([])
         setJustification('')
         setFollowUp('')
+        setFetchConvTrigger(!fetchConvTrigger)
     }
 
     const chatEndRef = useRef(null);

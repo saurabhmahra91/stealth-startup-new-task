@@ -8,7 +8,7 @@ from .axes import AXIS_REGISTRY, Axes
 from .refine_context import AxisRefinementContext
 from .utils import extract_json_from_response
 
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 
 
 def AXIS_SYSTEM_PROMPT(axis_name):

@@ -2,7 +2,7 @@ import logging
 import sqlite3
 
 from .constants import products_sqlite
-from .memory import valkey_client
+from ..memory import valkey_client
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -28,25 +28,3 @@ def log_db_status():
         conn.close()
     except Exception as e:
         logger.error(f"Error while accessing the database: {e}")
-
-
-def test_valkey():
-    try:
-        # Ping server
-        pong = valkey_client.ping()
-        logger.info("PONG? %s", pong)
-
-        # Set a key
-        valkey_client.set("test_key", "valkey_rocks")
-
-        # Get the key
-        value = valkey_client.get("test_key")
-        logger.info("Value for 'test_key': %s", value)
-
-        # Delete the key
-        valkey_client.delete("test_key")
-
-        logger.info("Valkey test passed!")
-
-    except Exception as e:
-        print(f"Error connecting or running commands: {e}")

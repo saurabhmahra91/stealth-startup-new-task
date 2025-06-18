@@ -1,17 +1,12 @@
 import sqlite3
-import uuid
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from .intelligence.flow import SearchFlow
-from .search.explicit import filter_explicit
-from .server.constants import products_sqlite, products_table
-from .server.memory import flush_user_memory, get_user_conversation, store_user_message, user_exists
-from .server.sanity import log_db_status, test_valkey
-from .memory.conv_store import ConversationStore
-from .memory.axes_store import AxesStore
+from .server import products_sqlite, products_table, log_db_status
+from .memory import test_valkey, ConversationStore, AxesStore
 from .intelligence.axes import Axes
 
 
@@ -60,11 +55,8 @@ def handle_query(data: UserQuery):
 
 @app.get("/conversation/{user_id}")
 def get_conversation(user_id: str):
-    if not user_exists(user_id):
-        raise HTTPException(status_code=404, detail="User ID not found")
-
-    conversation = get_user_conversation(user_id)
-    return {"conversation": conversation}
+    conv_store = ConversationStore(user_id)
+    return {"conversation": conv_store.get_all()}
 
 
 @app.get("/products")
@@ -82,8 +74,18 @@ def fetch_all_products():
 
 @app.post("/flush")
 def flush_memory(user_id: str = Query(..., description="User ID to flush memory for")):
-    if not user_exists(user_id):
-        raise HTTPException(status_code=404, detail="User ID not found")
+    conv_store = ConversationStore(user_id)
+    conv_already_empty = not conv_store.get_all()
+    conv_store.flush()
 
-    flush_user_memory(user_id)
-    return {"message": f"Memory flushed for user_id: {user_id}"}
+    axes_store = AxesStore(user_id)
+    axes_already_empty = not axes_store.latest() is None
+    axes_store.flush()
+
+    message = f"Memory flushed for user_id: {user_id}. "
+    if conv_already_empty:
+        message += "Conversations were already empty. "
+    if axes_already_empty:
+        message += "Search space was already None."
+
+    return {"message": message}
