@@ -12,6 +12,8 @@ from .decision import route_query
 from .followup import _ask_followup
 from .justification import _justify
 from .refinement_v2 import _refine_axes
+from .intent import _get_user_intent
+from .refine_context import AxisRefinementContext
 
 
 def get_followup_axes():
@@ -19,9 +21,10 @@ def get_followup_axes():
 
 
 class SearchState(BaseModel):
-    conversation: list[dict] = []
-    skus: list[dict] = load_fashion_data()
     search_space: Axes = Axes()
+    conversation: list[dict] = []
+
+    skus: list[dict] = load_fashion_data()
     justification: str = ""
     followup: str = ""
 
@@ -58,10 +61,17 @@ class SearchFlow(Flow[SearchState]):
         return
 
     @listen(begin_preparing_nonempty_justification)
-    async def get_axes_preferences(self):
-        self.state.search_space = await _refine_axes(
-            self.model, search_space=self.state.search_space, conv=self.state.conversation
+    def get_user_intent(self):
+        intent = _get_user_intent(self.model, self.state.conversation, self.state.search_space)
+        print("*******************\nuser intent identified by the agent ", intent)
+        return intent
+
+    @listen(get_user_intent)
+    async def get_axes_preferences(self, intent_summary):
+        context = AxisRefinementContext(
+            model=self.model, intent_summary=intent_summary, search_space=self.state.search_space
         )
+        self.state.search_space = await _refine_axes(context)
         print("Update search space ######################\n", self.state.search_space)
         return
 

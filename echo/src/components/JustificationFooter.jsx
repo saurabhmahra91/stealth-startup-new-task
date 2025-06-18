@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react'
 import AgentIcon from '../assets/icons/Brain'
 import './JustificationFooter.css'
 
-const MEAN_CHAR_DELAY = 50;
-const MEAN_CHAR_JITTER_VARIANCE = 100;
+const MEAN_CHAR_DELAY = 20;
+const MEAN_CHAR_JITTER_VARIANCE = 20;
+
 const randomDelay = (mean, variance) => {
     const stdDev = Math.sqrt(variance)
     const gaussian = () => {

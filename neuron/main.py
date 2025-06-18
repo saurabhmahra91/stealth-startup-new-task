@@ -10,6 +10,10 @@ from .search.explicit import filter_explicit
 from .server.constants import products_sqlite, products_table
 from .server.memory import flush_user_memory, get_user_conversation, store_user_message, user_exists
 from .server.sanity import log_db_status, test_valkey
+from .memory.conv_store import ConversationStore
+from .memory.axes_store import AxesStore
+from .intelligence.axes import Axes
+
 
 app = FastAPI()
 log_db_status()
@@ -31,22 +35,25 @@ class UserQuery(BaseModel):
 
 @app.post("/query")
 def handle_query(data: UserQuery):
-    if user_exists(data.user_id):
-        conv = get_user_conversation(data.user_id)
-    else:
-        conv = [{"role": "user", "content": data.user_input}]
+    conv_store = ConversationStore(data.user_id)
+    conv_store.save({"role": "user", "content": data.user_input})
 
-    store_user_message(user_id=data.user_id, role="user", content=data.user_input)
+    axes_store = AxesStore(data.user_id)
 
     flow = SearchFlow()
-    result = flow.kickoff(inputs={"conversation": conv})
+    result = flow.kickoff(
+        inputs={
+            "conversation": conv_store.get_all(),
+            "search_space": axes_store.latest() if axes_store.latest() is not None else Axes(),
+        }
+    )
     justification = result["justification"]
     followup = result["followup"]
     products = result["skus"]
+    search_space = result["search_space"]
 
-    store_user_message(
-        user_id=data.user_id, role="assistant", content=f"<justification>{justification}</justification>{followup}"
-    )
+    conv_store.save({"role": "assistant", "content": f"<justification>{justification}</justification>{followup}"})
+    axes_store.save(search_space)
 
     return {"products": products, "justification": justification, "follow_up": followup}
 
